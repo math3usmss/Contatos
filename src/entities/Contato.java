@@ -1,5 +1,7 @@
 package entities;
 
+import java.util.Objects;
+
 public class Contato {
 
     private String nome;
@@ -41,5 +43,16 @@ public class Contato {
     @Override
     public String toString(){
         return getNome() + "-" + getTelefone() + "-" + getEmail();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Contato contato)) return false;
+        return Objects.equals(nome, contato.nome) && Objects.equals(email, contato.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nome, email);
     }
 }
