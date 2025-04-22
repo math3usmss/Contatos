@@ -1,7 +1,6 @@
 import entities.Contato;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,10 +9,15 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
         ArrayList<Contato> contatos = new ArrayList<>();
+        String path = "C:\\Users\\mathe\\OneDrive\\Documentos\\Programacao\\estudos\\ProjetosJava\\Pro_contatos\\contatos.txt";
 
+        Contato contato = new Contato();
+
+        initialImport(contato, path, contatos);
         int option = menu();
+
         do {
-            switch (option){
+            switch (option) {
                 case 1:
                     System.out.println("Digite os dados do contato: ");
                     System.out.print("Nome: ");
@@ -23,38 +27,60 @@ public class Main {
                     System.out.print("Email: ");
                     String email = sc.next();
 
-                    Contato contato = new Contato(nome, telefone, email);
+                    contato = new Contato(nome, telefone, email);
                     contatos.add(contato);
 
                     option = menu();
                     break;
                 case 2:
                     System.out.println("Meus contatos: ");
-                    if(!contatos.isEmpty()){
-                        for(Contato c : contatos){
+                    if (!contatos.isEmpty()) {
+                        for (Contato c : contatos) {
                             System.out.println(c);
                         }
                         option = menu();
-                    }else{
+                    } else {
                         System.out.println("Sem contatos na lista");
                         option = menu();
                     }
-                break;
+                    break;
                 case 3:
                     System.out.println("Qual o nome do contato deseja buscar :");
                     String nomeBusca = sc.next();
-                    for(Contato c : contatos){
-                        if(c.getNome().equalsIgnoreCase(nomeBusca)){
+                    for (Contato c : contatos) {
+                        if (c.getNome().equalsIgnoreCase(nomeBusca)) {
                             System.out.println(c);
                         }
                     }
                     option = menu();
                     break;
+                case 4:
+                    System.out.println("Qual o nome do contato deseja editar :");
+                    String nomeEditar = sc.next();
+                    for (Contato c : contatos) {
+                        if (c.getNome().equalsIgnoreCase(nomeEditar)) {
+                            System.out.println(c);
+                            System.out.println("Digite os dados do contato: ");
+                            System.out.print("Nome: ");
+                            String nomeEdit = sc.next();
+                            System.out.print("Telefone: ");
+                            String telefoneEdit = sc.next();
+                            System.out.print("Email: ");
+                            String emailEdit = sc.next();
+
+                            c.setNome(nomeEdit);
+                            c.setTelefone(telefoneEdit);
+                            c.setEmail(emailEdit);
+                        }
+                    }
+                    System.out.println("Contato editado");
+                    option = menu();
+                    break;
                 case 5:
                     System.out.println("Qual o nome do contato deseja deletar :");
                     String nomeBuscaDelete = sc.next();
-                    for(Contato c : contatos){
-                        if(c.getNome().equalsIgnoreCase(nomeBuscaDelete)){
+                    for (Contato c : contatos) {
+                        if (c.getNome().equalsIgnoreCase(nomeBuscaDelete)) {
                             System.out.println(c);
                         }
                     }
@@ -62,8 +88,8 @@ public class Main {
                     String DeleteEmail = sc.next();
 
                     ArrayList<Contato> contatosParaRemover = new ArrayList<>();
-                    for (Contato cdeletar : contatos){
-                        if(cdeletar.getEmail().equalsIgnoreCase(DeleteEmail)){
+                    for (Contato cdeletar : contatos) {
+                        if (cdeletar.getEmail().equalsIgnoreCase(DeleteEmail)) {
                             contatosParaRemover.add(cdeletar);
                         }
                     }
@@ -72,9 +98,8 @@ public class Main {
                     option = menu();
                     break;
                 case 6:
-                    String path = "C:\\Users\\mathe\\OneDrive\\Documentos\\Programacao\\estudos\\ProjetosJava\\Pro_contatos\\contatos.txt";
-                    try(BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
-                        for(Contato cExportar : contatos){
+                    try (BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
+                        for (Contato cExportar : contatos) {
                             String linha = cExportar.getNome() + "-" + cExportar.getTelefone() + "-" + cExportar.getEmail();
                             bw.write(linha);
                             bw.newLine();
@@ -82,15 +107,34 @@ public class Main {
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-
-
+                    System.out.println("Contatos exportados com sucesso!");
                     option = menu();
                     break;
+
             }
-        }while (option != 0);
+        } while (option != 0);
+
+        System.out.println("Aplicativo fechado.");
+
+        sc.close();
     }
 
-    public static int menu(){
+    public static void initialImport(Contato contato, String path, ArrayList<Contato> contatos){
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                String[] contatosSalvos = linha.split("-");
+                contato = new Contato(contatosSalvos[0], contatosSalvos[1], contatosSalvos[2]);
+                contatos.add(contato);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static int menu() {
         Scanner sc = new Scanner(System.in);
 
         System.out.println("-----------------------");
